@@ -8,6 +8,7 @@ import {
     MDBBtn
 } from 'mdb-react-ui-kit';
 import './Footer.css'
+import SmBtn from './SmBtn';
 export default function App() {
   return (
     <MDBFooter bgColor='Black' className='text-left text-lg-left'>
@@ -114,45 +115,11 @@ export default function App() {
               <li>
               <MDBContainer className='text-center p-4 pb-0'>
         <section className='mb-4'>
-
-          <MDBBtn
-            floating
-            className='m-1'
-            style={{ backgroundColor: '#dd4b39' }}
-            href='#!'
-            role='button'
-          >
-            <MDBIcon fab icon='google' />
-          </MDBBtn>
-          <MDBBtn
-            floating
-            className='m-1'
-            style={{ backgroundColor: '#ac2bac' }}
-            href='#!'
-            role='button'
-          >
-            <MDBIcon fab icon='instagram' />
-          </MDBBtn>
-
-          <MDBBtn
-            floating
-            className='m-1'
-            style={{ backgroundColor: '#0082ca' }}
-            href='#!'
-            role='button'
-          >
-            <MDBIcon fab icon='linkedin-in' />
-          </MDBBtn>
-
-          <MDBBtn
-            floating
-            className='m-1'
-            style={{ backgroundColor: '#333333' }}
-            href='#!'
-            role='button'
-          >
-            <MDBIcon fab icon='github' />
-          </MDBBtn>
+          <SmBtn small={true} icon="instagram" color="#ac2bac"/>
+          <span style={{margin:"0 3px 0 0 "}}></span>
+          <SmBtn small={true} icon="github" color="#333333"/>
+          <SmBtn small={true} icon="linkedin-in" color="#0082ca"/>
+          <SmBtn small={true} icon="facebook-f" color="blue"/>
         </section>
       </MDBContainer>
               </li>
