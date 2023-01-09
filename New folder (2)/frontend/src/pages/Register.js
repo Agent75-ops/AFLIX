@@ -7,6 +7,12 @@ import Navbar from '../components/navbar';
 import { useNavigate } from 'react-router-dom';
 import {useCookies} from "react-cookie";
 
+//1 --> passwords don't match
+//2 --> email already used
+//3 --> Your password must be at least 8 characters
+
+
+
 function Register(){
     let navigate = useNavigate()
     const {state}= useLocation();
@@ -15,24 +21,39 @@ function Register(){
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repassword, setRepassword] = useState("");
-    const [passvalidation, setPassvalidation] = useState(false);
-    const [cookies, setCookies] = useCookies(["token"]);
+    const [passvalidation, setPassvalidation] = useState(0);
+    const [cookies, setCookies,removeCookie] = useCookies(["token"]);
+    const [errorMessage, seterrorMessage] = useState("")
     
-    useEffect(()=>{if(state !=null){
+    useEffect(()=>{
+        if (cookies.token){
+            navigate("/movies", {replace:true})
+        }
+        if(state !=null){
             setEmail(state.text);
             console.log("done")
         }},[])
-    setCookies("toj","shit", {path: '/'})
 
     function verifyPass(pass, repass){
-        if(pass !== repass){
-            setPassvalidation(true)
+        if(pass.length < 8){
+            setPassvalidation(3)
+            seterrorMessage("Your password must be at least 8 characters")
             return false
         }
         else{
-            setPassvalidation(false)
-            return true
+            if(pass !== repass){
+            setPassvalidation(1)
+            seterrorMessage("Passwords don't match")
+            return false
+            
+            }
+            else{
+                setPassvalidation(0)
+                seterrorMessage("")
+                return true
+            }
         }
+        
     }
     function handleSubmit(e) {
         e.preventDefault();
@@ -48,12 +69,14 @@ function Register(){
             .then((res)=>{
                 console.log(res) 
                 console.log(res.status , res.ok)
-                if (res.status == 201 && res.ok == true){
-                navigate("/movies", { replace: true })}
+                if(res.status== 403){
+                setPassvalidation(2)
+            }
                 return (res.json())})
             .then(res =>{
                 console.log(res)
-                // setCookies("token",res.token, {path: '/'})
+                setCookies("token",[res.token,res.user.username,res.user.password], {path: '/'})
+                navigate("/movies", { replace: true })
                 return res.user;
             })
             .catch((error)=>{console.log(error)})
@@ -87,15 +110,18 @@ function Register(){
                             <div className='register-form-div'>
                                 <label>Email</label>
                                 {state == null ? <input required type="email" value={email} onChange={(e)=>{setEmail(e.target.value)}}></input> : <input required style={inputNostate} readOnly={true} type="email" value ={state.text}></input>}
+                                <p style={passvalidation==2?{display:"block"}:null}>email already used !</p>
                             </div>
                             <div className='register-form-div'>
                                 <label>Password</label>
-                                <input style={passvalidation ?{borderBottom:"2px solid red"}:null}  type="password" value={password} onChange={(e)=>{setPassword(e.target.value)}} required></input>
+                                <input style={passvalidation==1 || passvalidation==3?{borderBottom:"2px solid red"}:null}  type="password" value={password} onChange={(e)=>{setPassword(e.target.value)}} required></input>
+                                <p style={passvalidation==3 ?{display:"block"}:null} >{errorMessage}</p>
+
                             </div>
                             <div className='register-form-div'>
                                 <label>Confirm Password</label>
-                                <input style={passvalidation ?{borderBottom:"2px solid red"}:null} type="password"  value={repassword} onChange={(e)=>{setRepassword(e.target.value)}} required></input>
-                                <p style={passvalidation ?{visibility:"visible"}:null} >Passwords don't match !</p>
+                                <input style={passvalidation==1 ?{borderBottom:"2px solid red"}:null} type="password"  value={repassword} onChange={(e)=>{setRepassword(e.target.value)}} required></input>
+                                <p style={passvalidation ==1 ?{display:"block"}:null} >{errorMessage}</p>
                             </div>
                             
                             <div className='register-form-div checkbox'>
@@ -104,7 +130,7 @@ function Register(){
                             </div>
                             <div className='register-form-div buttons'>
                                 <Button style={{cursor: 'pointer',color:'white'}} type="submit"  id="signin" color="warning">Submit</Button>
-                                <div><Link to={'/'}>Sign in<i id='arrow' className="fa-solid fa-arrow-right"></i></Link></div>
+                                <div><Link to={'/login'}>Sign in<i id='arrow' className="fa-solid fa-arrow-right"></i></Link></div>
                             </div>    
                         </form>
                     </div>

@@ -11,13 +11,7 @@ import Block from "../components/Blocks";
 import Footer from "../components/Footer";
 import Navbar from "../components/navbar"
 function Home(){
-    const [text,setText]= useState("");
-    function handleValue(e){
-        e.preventdefault()
-        setText(e.target.value)
-
-    }
-
+    
     return(
         <>
         <div className="page1">
